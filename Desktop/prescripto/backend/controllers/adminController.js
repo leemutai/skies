@@ -2,12 +2,12 @@
 
 
 // api for adding doctor
-const addDoctor = async ()=> {
-    try{
-        const {name,email,password,image,speciality,degree,experience,about,fees,address} = req.body;
+const addDoctor = async (req,res)=> {
+    try {
+        const {name,email,password,speciality,degree,experience,about,fees,address} = req.body;
         const imageFile = req.file
 
-        console.log({name,email,password,image,speciality,degree,experience,about,fees,address},imageFile)
+        console.log({name,email,password,speciality,degree,experience,about,fees,address},imageFile)
 
 
     } catch (error) {
