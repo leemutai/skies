@@ -5,6 +5,7 @@ import connectDB   from './config/mongodb.js';
 import connectCloudinary from './config/cloudinary.js';
 import adminRouter from './routes/adminRoute.js'; // Correctly imports the default export
 import doctorRouter from './routes/doctorRoute.js';
+import userRouter from './routes/userRoute.js';
 
 
 // app config
@@ -20,6 +21,7 @@ app.use(cors());
 // api routes/endpoint
 app.use('/api/admin',adminRouter)
 app.use('/api/doctor',doctorRouter)
+app.use('/api/user',userRouter)
 
 // localhost:4000/api/admin/add-doctor
 
