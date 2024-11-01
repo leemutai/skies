@@ -177,13 +177,23 @@ const bookAppointment = async (req,res)=>{
         
     } catch (error) {
         console.log(error);
-        res.json({success:false,message:"doctor not available"});
+        res.json({success:false,message:error.message});
     }
 
 
-    
-
 }
+// API TO get user appointments
+const listAppointment = async (req,res)=> {
+    try {
+        const {userId} = req.body
+        const appointments = await appointmentModel.find({userId})
 
+        res.json({success:true,appointments});
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:error.message});
+    }
+}
+ 
 
-export {registerUser,loginUser,getProfile,updateProfile, bookAppointment};
+export {registerUser,loginUser,getProfile,updateProfile, bookAppointment,listAppointment};
