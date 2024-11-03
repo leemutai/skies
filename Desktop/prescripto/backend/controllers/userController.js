@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import {v2 as cloudinary} from 'cloudinary';
 import doctorModel from '../models/doctorModels.js';
 import appointmentModel from '../models/appointmentModel.js';
+import razorpay from 'razorpay'
+import {Mpesa} from 'mpesa-api'
 
 // API TO register user
 const registerUser = async(req,res)=>{
@@ -228,5 +230,103 @@ const cancelAppointment = async (req,res) =>{
     }
 }
  
+// const razorpayInstance = new razorpay({
+//     key_id:process.env.CONSUMER_KEY_ID,
+//     key_secret:process.env.CONSUMER_KEY_SECRET,
+// })
 
-export {registerUser,loginUser,getProfile,updateProfile, bookAppointment,listAppointment,cancelAppointment};
+const generateMpesaToken = async () => {
+    const consumerKey = process.env.CONSUMER_KEY_ID;
+    const consumerSecret = process.env.CONSUMER_KEY_SECRET;
+    const auth = Buffer.from(`${consumerKey}:${consumerSecret}`).toString('base64');
+  
+    try {
+      const response = await axios.get(
+        'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials',
+        {
+          headers: {
+            Authorization: `Basic ${auth}`,
+          },
+        }
+      );
+      console.log(response.data); // Log token response for debugging
+      return response.data.access_token;
+    } catch (error) {
+      console.error('Error generating token:', error.response ? error.response.data : error.message);
+    }
+  };
+
+const mpesaInstance = new Mpesa({
+    key_id:process.env.CONSUMER_KEY_ID,
+    key_secret:process.env.CONSUMER_KEY_SECRET,
+    initiatorPassword:process.env.INITIATOR_PASSWORD,
+    securityCredential:process.env.SECURITY_CREDENTIAL,
+    certificatePath:process.env.CERTIFICATE_PATH,
+    callbackUrl:process.env.CALLBACK_URL,
+})
+
+// api to make payment of appointments using razorpay
+
+// const paymentRazorpay = async (req,res)=> {
+//     try {
+//         const {appointmentId} = req.body
+//     const appointmentData = await appointmentModel.findById(appointmentId)
+
+//     if (!appointmentData || appointmentData.cancelled) {
+//         return res.json({success:false,message:"Appointment Cancelled or not found"})
+        
+//     }
+
+//     // creating options for razorpay payments
+//     const options = {
+//         amount: appointmentData.amount * 100,
+//         currency:process.env.CURRENCY,
+//         receipt: appointmentId,
+//     }
+
+//     //creation of an order
+//     const order = await razorpayInstance.orders.create(options)
+//     res.json({success:true,order})
+        
+//     } catch (error) {
+//         console.log(error);
+//         res.json({success:false,message:error.message});
+//     }
+
+
+    
+
+// }
+// api to make payments using mpesa
+
+const paymentMpesa = async (req, res) => {
+    try {
+        const { appointmentId, userPhone } = req.body;
+        const appointmentData = await appointmentModel.findById(appointmentId);
+
+        if (!appointmentData || appointmentData.cancelled) {
+            return res.json({ success: false, message: "Appointment Cancelled or not found" });
+        }
+
+        const phoneNumber = userPhone || '+254797001959';
+        const options = {
+            amount: appointmentData.amount * 100,
+            currency: process.env.CURRENCY,
+            receipt: appointmentId,
+            phoneNumber: phoneNumber,
+        };
+
+        console.log('MPESA payment options:', options); // Debug options data
+
+        // Initiate payment
+        const order = await mpesaInstance.lipaNaMpesaOnline(options);
+        console.log('MPESA payment order response:', order); // Debug order response
+        res.json({ success: true, order });
+        
+    } catch (error) {
+        console.error('MPESA payment error:', error.response ? error.response.data : error.message);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export {registerUser,loginUser,getProfile,updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentMpesa};
