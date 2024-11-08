@@ -329,4 +329,6 @@ const paymentMpesa = async (req, res) => {
     }
 };
 
+
+
 export {registerUser,loginUser,getProfile,updateProfile, bookAppointment,listAppointment,cancelAppointment,paymentMpesa};
