@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
 
 const AllAppointments = () => {
   const { aToken, appointments, getAllAppointments } = useContext(AdminContext);
-  const { calculateAge, slotDateFormat } = useContext(AppContext);
+  const { calculateAge, slotDateFormat, currency } = useContext(AppContext);
 
   useEffect(() => {
     if (aToken) {
@@ -15,8 +16,9 @@ const AllAppointments = () => {
   return (
     <div className="w-full max-w-6xl m-5">
       <p className="mb-3 text-lg font-medium">All Appointments</p>
-      <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[60vh]: overflow-y-scroll">
-        <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_ifr_1fr] grid-flow-col py-3 px-6 border-b">
+      <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[60vh] overflow-y-auto">
+        {/* Header Row */}
+        <div className="hidden sm:grid grid-cols-[0.5fr_2fr_1fr_2fr_2fr_1fr_1fr] py-3 px-6 border-b">
           <p>#</p>
           <p>Patient</p>
           <p>Age</p>
@@ -26,25 +28,57 @@ const AllAppointments = () => {
           <p>Actions</p>
         </div>
 
+        {/* Appointment Rows */}
         {appointments.map((item, index) => (
           <div
-            className="flex flex-wrap justify-between max-sm:gap-2 sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr] items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-500"
             key={index}
+            className="flex flex-wrap sm:grid sm:grid-cols-[0.5fr_2fr_1fr_2fr_2fr_1fr_1fr] items-center gap-2 py-3 px-6 border-b hover:bg-gray-100 text-gray-700"
           >
-            <p className="max-sm:hidden">{index + 1}</p>
+            {/* Index */}
+            <p className="hidden sm:block">{index + 1}</p>
+
+            {/* Patient Info */}
             <div className="flex items-center gap-2">
               <img
-                className="w-8 rounded-full"
+                className="w-8 h-8 rounded-full"
                 src={item.userData.image}
                 alt=""
               />
               <p>{item.userData.name}</p>
             </div>
 
-            <p className="max-sm:hidden">{calculateAge(item.userData.dob)}</p>
+            {/* Age */}
+            <p className="hidden sm:block">{calculateAge(item.userData.dob)}</p>
+
+            {/* Date & Time */}
             <p>
-              {slotDateFormat(item.slotDate)},{item.slotTime}
+              {slotDateFormat(item.slotDate)}, {item.slotTime}
             </p>
+
+            {/* Doctor Info */}
+            <div className="flex items-center gap-2">
+              <img
+                className="w-8 h-8 rounded-full bg-green-200"
+                src={item.docData.image}
+                alt=""
+              />
+              <p>{item.docData.name}</p>
+            </div>
+
+            {/* Fees */}
+            <p>
+              {currency}
+              {item.amount}
+            </p>
+
+            {/* Actions */}
+            <div className="flex justify-center">
+              <img
+                className="w-8 h-8 cursor-pointer"
+                src={assets.cancel_icon}
+                alt="Cancel"
+              />
+            </div>
           </div>
         ))}
       </div>
