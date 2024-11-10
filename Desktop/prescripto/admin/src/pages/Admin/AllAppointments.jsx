@@ -4,7 +4,7 @@ import { AppContext } from "../../context/AppContext";
 
 const AllAppointments = () => {
   const { aToken, appointments, getAllAppointments } = useContext(AdminContext);
-  const { calculateAge } = useContext(AppContext);
+  const { calculateAge, slotDateFormat } = useContext(AppContext);
 
   useEffect(() => {
     if (aToken) {
@@ -41,7 +41,10 @@ const AllAppointments = () => {
               <p>{item.userData.name}</p>
             </div>
 
-            <p>{calculateAge(item.userData.dob)}</p>
+            <p className="max-sm:hidden">{calculateAge(item.userData.dob)}</p>
+            <p>
+              {slotDateFormat(item.slotDate)},{item.slotTime}
+            </p>
           </div>
         ))}
       </div>
