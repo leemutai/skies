@@ -6,9 +6,7 @@ function DoctorContextProvider({ children }) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [dToken, setDToken] = useState(
-    typeof window !== "undefined" && localStorage.getItem("dToken")
-      ? localStorage.getItem("dToken")
-      : ""
+    localStorage.getItem("dToken") ? localStorage.getItem("dToken") : ""
   );
 
   const value = {
