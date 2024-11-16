@@ -22,8 +22,8 @@ function DoctorContextProvider({ children }) {
         }
       );
       if (data.success) {
-        setAppointments(data.appointments.reverse());
-        console.log(data.appointments.reverse());
+        setAppointments(data.appointments);
+        console.log(data.appointments);
       } else {
         toast.error(data.message);
       }
