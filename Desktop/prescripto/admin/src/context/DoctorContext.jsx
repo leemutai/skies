@@ -12,6 +12,7 @@ function DoctorContextProvider({ children }) {
   );
 
   const [appointments, setAppointments] = useState([]);
+  const [dashData, setDashData] = useState(false);
 
   const getAppointments = async () => {
     try {
@@ -71,6 +72,23 @@ function DoctorContextProvider({ children }) {
     }
   };
 
+  const getDashData = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/doctor/dashboard`, {
+        headers: { dToken },
+      });
+      if (data.success) {
+        setDashData(data.dashData);
+        console.log(data.dashData);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const value = {
     dToken,
     setDToken,
@@ -80,6 +98,9 @@ function DoctorContextProvider({ children }) {
     getAppointments,
     completeAppointment,
     cancelAppointment,
+    dashData,
+    setDashData,
+    getDashData,
   };
 
   return (

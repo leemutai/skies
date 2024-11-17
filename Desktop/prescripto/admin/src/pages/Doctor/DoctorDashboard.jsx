@@ -1,7 +1,16 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { DoctorContext } from "../../context/DoctorContext";
 
 function DoctorDashboard() {
-  return <div></div>;
+  const { dToken, dashData, setDashData, getDashData } =
+    useContext(DoctorContext);
+
+  useEffect(() => {
+    if (dToken) {
+      getDashData();
+    }
+  }, [dToken]);
+  return dashData && <div></div>;
 }
 
 export default DoctorDashboard;
